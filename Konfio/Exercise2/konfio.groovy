@@ -35,7 +35,7 @@ def call(body) {
 							script {	
 							encodedPasswd = java.net.URLEncoder.encode(BB_PASSWORD, "UTF-8")
 									sh """
-										git clone -b ${BRANCH_TAG} --depth 1 https://${BB_USERNAME}:${encodedPasswd}@bitbucket.org/agrofydev/${BITBUCKET_PROJECT}.git builds
+										git clone -b ${BRANCH_TAG} --depth 1 https://${BB_USERNAME}:${encodedPasswd}@bitbucket.org/konfiodev/${BITBUCKET_PROJECT}.git builds
 										git log -1 --pretty=format:"%n%h - %an, %ar: %s%n%n"
 										rsync -r builds/ .
 									"""
@@ -82,7 +82,7 @@ def call(body) {
 						withAWS(credentials: config.awsCred) {
 							script {
 								sh """
-								  aws s3 sync .next/static s3://agrofy-bundles-${config.envType}/${APP_NAME}-${pipelineParams.targetNS}/_next \\
+								  aws s3 sync .next/static s3://konfio-bundles-${config.envType}/${APP_NAME}-${pipelineParams.targetNS}/_next \\
 								    --metadata-directive REPLACE --cache-control "max-age=31536000" --acl public-read
 								"""
 							}
@@ -108,7 +108,7 @@ def call(body) {
 						withAWS(credentials: config.awsCred) {
 							script {
 								sh """
-								  aws s3 sync .next/static s3://agrofy-bundles-${config.envType}/${APP_NAME}-${pipelineParams.targetNS}/_next \\
+								  aws s3 sync .next/static s3://konfio-bundles-${config.envType}/${APP_NAME}-${pipelineParams.targetNS}/_next \\
 								    --metadata-directive REPLACE --cache-control "max-age=31536000" --acl public-read --delete
 								"""
 							}

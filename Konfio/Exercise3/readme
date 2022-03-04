@@ -55,6 +55,17 @@ source
 = "terraform-aws-modules/vpc/aws//examples/simple-vpc"
 version = "2.48.0"
 }
+
+Or we can use a local module for exmple: 
+
+├── vpc
+│ ├── variables.tf
+│ ├── outputs.tf
+│ └── backend.tf
+│ └── main.tf
+
+
+
 --------------------------------------------------------------------------------------
 Always back up your Terraform state files.
 

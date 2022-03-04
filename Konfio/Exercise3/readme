@@ -1,0 +1,16 @@
+The idea for this exercise is to create various services with terraform and terragrunt. Suppose I have a directory called devops and inside it we will have several subfolders as described below.
+
+why-we-use-terragrunt ?
+
+the initial purpose of Terragrunt was to fill in a few gaps in Terraform’s functionality, and it has continuously expanded with new features. Although Terraform has evolved to support more advanced feature sets, it still has room for improvement. Only Terragrunt brings the following rich feature set to the table:
+
+Explicit dependencies: Share your state easily
+Automatic Atlantis config generation: Eliminates toil
+Environment variable support: Discourages hard-coded values
+Generateblocks: Remove repeated Terraform
+Automatic resource tagging: Applies metadata universally
+Arbitrary command output from variables: Streamlines library usage
+read_terragrunt_configimports: Eliminate repeated Terragrunt code
+
+
+

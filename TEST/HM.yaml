@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: Hola-mundo
+  labels:
+    app: Hola-mundo
+  annotations:
+    test.app-name: Hola-mundo    
+    test.environment: Development    
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: Hola-mundo
+  labels:
+    app: Holal-Mundo
+  annotations:
+    test.app-name: Account-ui
+    test.environment: Development
+spec:
+  selector:
+    matchLabels:
+      app: Hola-mundo
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  progressDeadlineSeconds: 300
+  template:    
+    spec:
+      containers:
+      - name: Hola-mundo
+        image: 668112196432.dkr.ecr.us-east-1.amazonaws.com/Hola-mundo:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "25m"
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          failureThreshold: 3
+      serviceAccountName: Hola-mundo
+      nodeSelector:
+        kubernetes.io/os: linux
+        node.kubernetes.io/env: dev
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: Hola-mundo
+  labels:
+    app: Hola-Mundo
+  annotations:
+    test.app-name: Hola-mundo    
+    test.environment: Development    
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: Hola-mundo
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 200
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: Hola-mundo
+  labels:
+    app: Hola-mundo
+  annotations:
+    test.app-name: Hola-mundo    
+    test.environment: Development    
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: Hola-mundo
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: Hola-mundo-ui-route53-1
+  labels:
+    app: Hola-mundo
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/tags: AWSFirewallManager=enabled
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/group.name: dev-external
+    alb.ingress.kubernetes.io/security-groups: internal_public_alb_ingress_sg, vpn_public_alb_ingress_sg, magento_public_alb_ingress_sg
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=1800
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:668112196432:certificate/94211855-3429-409e-8d0b-41c716c810fa
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '60'
+    test.app-name: Hola-mundo    
+    test.environment: Development    
+spec:
+  rules:
+    - host: Hola-muundo.route53.dev-us-1.eks.test.com
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: ssl-redirect
+              servicePort: use-annotation
+          - path: /*
+            backend:
+              serviceName: Hola-mundo
+              servicePort: http
+    - host: hola-mundo.test.com
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: ssl-redirect
+              servicePort: use-annotation
+          - path: /*
+            backend:
+              serviceName: hola-mundo
+              servicePort: http

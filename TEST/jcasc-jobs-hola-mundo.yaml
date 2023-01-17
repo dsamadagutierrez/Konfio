@@ -1,0 +1,40 @@
+- script: >
+    folder('hola-mundo') {
+        displayName('Hola-mundo')
+        description('Folder for Hola-mundo project')
+    }
+- script: >
+    folder('hola-mundo') {
+        displayName('Hola-mundo')
+        description('Folder for Hola-mundo')
+    }
+- script: >
+    pipelineJob('hola-mundo/') {
+      parameters {
+        stringParam('GIT_BRANCH_NAME', 'develop', 'Git BRANCH or TAG to build')
+        choiceParam('COUNTRY_LANG', ['es-AR', 'es-BO', 'pt-BR', 'es-CL', 'es-CO', 'es-PY', 'es-PE', 'es-UY'])
+      }
+      environmentVariables {
+        keepBuildVariables(true)
+        keepSystemVariables(true)
+      }
+      definition {
+        cpsScm {
+          scm {
+            git {
+              remote {
+                url '\$BITBUCKET_URL/\$JENKINS_PIPELINES_PROJ.git'
+                credentials 'BBsvcAccnt'
+              }
+              branch 'master'
+              extensions {}
+            }
+          }
+          scriptPath 'hola-mundo/hola-mundo.groovy'
+        }
+      }
+      logRotator {
+        numToKeep(30)
+        artifactNumToKeep(30)
+      }
+    }
